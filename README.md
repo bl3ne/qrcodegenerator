@@ -58,7 +58,7 @@ This isn't just another QR code generator. It's an exploration of brutalist desi
 ## How to Use
 
 **Live Version:**
-1.  Navigate to the [**Live Demo**](https://bl3ne.github.io/qrcodegenerator/](https://raw.githack.com/bl3ne/qrcodegenerator/main/qrcodegenerator.html)).
+1.  Navigate to the [**Live Demo**](https://raw.githack.com/bl3ne/qrcodegenerator/main/qrcodegenerator.html)).
 2.  Enter any text or URL.
 3.  Select your options and click "Generate".
 

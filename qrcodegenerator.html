@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        :root {
+            --bg-page: #ffffff;
+            --bg-container: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-main: #000000;
+            --btn-primary-bg: #000000;
+            --btn-primary-text: #ffffff;
+            --btn-secondary-bg: #ffffff;
+            --btn-secondary-text: #000000;
+            --qr-area-bg: #f5f5f5;
+        }
+
+        body.dark-mode {
+            --bg-page: #111111;
+            --bg-container: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border-main: #ffffff;
+            --btn-primary-bg: #ffffff;
+            --btn-primary-text: #000000;
+            --btn-secondary-bg: #111111;
+            --btn-secondary-text: #ffffff;
+            --qr-area-bg: #222222;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', monospace;
+            background: var(--bg-page);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.2s ease;
+        }
+
+        .container {
+            background: var(--bg-container);
+            max-width: 480px;
+            width: 100%;
+            padding: 40px;
+            border: 2px solid var(--border-main);
+            transition: border 0.2s ease, max-width 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border: 2px solid var(--border-main);
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--bg-container);
+            border: 2px solid var(--border-main);
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: var(--bg-container);
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-main);
+            font-size: 15px;
+            outline: none;
+            background: var(--bg-container);
+            font-family: inherit;
+            color: var(--text-primary);
+            -webkit-appearance: none;
+        }
+        
+        button {
+            width: 100%;
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+
+        .download-btn {
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            border: 2px solid var(--border-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .input-group, .options { margin-bottom: 24px; }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .option-group label { display: block; font-size: 12px; color: var(--text-primary); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .qr-container {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border-main);
+            display: none;
+        }
+        .qr-container.show { display: block; }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+            background: var(--qr-area-bg);
+            padding: 24px;
+        }
+        
+        .icon { width: 16px; height: 16px; fill: currentColor; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QR Code Generator</h1>
+            <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <p class="subtitle">Enter URL or text to generate</p>
+        
+        <div class="input-group">
+            <input type="text" id="textInput" placeholder="https://example.com" />
+        </div>
+
+        <div class="options">
+            <div class="option-group">
+                <label>Size</label>
+                <select id="sizeSelect">
+                    <option value="128">Small</option>
+                    <option value="256" selected>Medium</option>
+                    <option value="512">Large</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label>Error Level</label>
+                <select id="errorLevel">
+                    <option value="L">Low</option>
+                    <option value="M" selected>Medium</option>
+                    <option value="Q">High</option>
+                    <option value="H">Maximum</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="generateQR()">Generate</button>
+
+        <div class="qr-container" id="qrContainer">
+            <div id="qrcode"></div>
+            <button class="download-btn" onclick="downloadQR()">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download QR Code
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const container = document.querySelector('.container');
+
+        function generateQR() {
+            const text = document.getElementById('textInput').value.trim();
+            const qrcodeDiv = document.getElementById('qrcode');
+            const size = parseInt(document.getElementById('sizeSelect').value);
+            
+            if (!text) return;
+            qrcodeDiv.innerHTML = '';
+            
+            // Adjust container size for large QR codes
+            if (size === 512) {
+                container.style.maxWidth = '680px';
+            } else {
+                container.style.maxWidth = '480px';
+            }
+            
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            new QRCode(qrcodeDiv, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: isDarkMode ? '#ffffff' : '#000000',
+                colorLight: isDarkMode ? '#111111' : '#ffffff',
+                correctLevel: QRCode.CorrectLevel[document.getElementById('errorLevel').value]
+            });
+            document.getElementById('qrContainer').classList.add('show');
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+        document.getElementById('textInput').addEventListener('keypress', e => { if (e.key === 'Enter') generateQR() });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function setMode(isDark) {
+            if (isDark) {
+                body.classList.add('dark-mode');
+                themeToggle.checked = true;
+                localStorage.setItem('brutalist_mode', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+                localStorage.setItem('brutalist_mode', 'light');
+            }
+            if (document.getElementById('qrcode').innerHTML) {
+                generateQR();
+            }
+        }
+
+        themeToggle.addEventListener('change', () => setMode(themeToggle.checked));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedMode = localStorage.getItem('brutalist_mode');
+            setMode(savedMode === 'dark');
+        });
+    </script>
+</body>
+</html>

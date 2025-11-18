@@ -71,7 +71,7 @@ This isn't just another QR code generator. It's an exploration of brutalist desi
     ```bash
     cd qrcodegenerator
     ```
-3.  Open the `index.html` file in your browser. That's it!
+3.  Open the `qrcodegenerator.html` file in your browser. That's it!
 
 ***
 
